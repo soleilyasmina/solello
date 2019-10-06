@@ -1,5 +1,5 @@
 class ColumnsController < ApplicationController
-  before_action :set_column, only: [:show, :update, :destroy, :swap]
+  before_action :set_column, only: [:show, :update, :destroy, :swap_columns]
 
   # GET /columns
   def index
@@ -29,7 +29,8 @@ class ColumnsController < ApplicationController
   end
 
   # PUT /columns/:id/:new_order
-  def swap
+  def swap_columns
+    puts Column.swap @column, params[:new_order], Board.find(@column.board_id)
     render json: @column
   end
 
