@@ -1,3 +1,34 @@
 class Column < ApplicationRecord
   belongs_to :board
+
+  def self.swap column, new_order, parent
+    # going left
+    order = column[:order]
+    if new_order < order
+      columns = Column.where(order: new_order...order, board_id: parent.id)
+      columns.each do |col|
+        if col.id == column.id
+          col.update({ order: new_order })
+        else
+          col.update({ order: col.order + 1 })
+        end
+      end
+      column.update({ order: new_order })
+    # going right
+    elsif order < new_order
+      columns = Column.where(order: order+1..new_order, board_id: parent.id)
+      columns.each do |col|
+        if col.id == column.id
+          col.update({ order: new_order })
+        else
+          col.update({ order: col.order - 1 })
+        end
+      end
+      column.update({ order: new_order })
+    # they're the same
+    else
+      false
+    end
+    true
+  end
 end
