@@ -1,5 +1,6 @@
 class Column < ApplicationRecord
   belongs_to :board
+  has_many :tasks
 
   def self.swap column, new_order, parent
     new_order = new_order.to_i

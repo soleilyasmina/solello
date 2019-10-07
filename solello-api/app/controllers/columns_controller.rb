@@ -38,7 +38,7 @@ class ColumnsController < ApplicationController
 
   # PATCH/PUT /columns/1
   def update
-    if @column.update({ title: column_params[:title] })
+    if @column.update(column_params)
       render json: @column
     else
       render json: @column.errors, status: :unprocessable_entity

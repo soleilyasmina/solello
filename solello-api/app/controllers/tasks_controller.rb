@@ -1,5 +1,6 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :update, :destroy]
+  before_action :set_column, only: [:create]
 
   # GET /tasks
   def index
@@ -15,10 +16,15 @@ class TasksController < ApplicationController
 
   # POST /tasks
   def create
-    @task = Task.new(task_params)
+    order = @column.tasks.length
+    @task = Task.new({
+      title: task_params[:title],
+      column: @column,
+      order: order
+    })
 
     if @task.save
-      render json: @task, status: :created, location: @task
+      render json: @task, status: :created
     else
       render json: @task.errors, status: :unprocessable_entity
     end
@@ -44,8 +50,12 @@ class TasksController < ApplicationController
       @task = Task.find(params[:id])
     end
 
+    def set_column
+      @column = Column.find(params[:column_id])
+    end
+
     # Only allow a trusted parameter "white list" through.
     def task_params
-      params.require(:task).permit(:title, :order, :column_id)
+      params.require(:task).permit(:title)
     end
 end
