@@ -1,6 +1,7 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :update, :destroy]
-  before_action :set_column, only: [:create]
+  before_action :set_task, only: [:show, :update, :destroy, :swap_tasks]
+  before_action :set_column, only: [:create, :swap_tasks]
+  after_action :cleanup, only: [:destroy]
 
   # GET /tasks
   def index
@@ -30,6 +31,11 @@ class TasksController < ApplicationController
     end
   end
 
+  def swap_tasks
+    Task.swap @task, params[:new_order], @column
+    render json: @task
+  end
+
   # PATCH/PUT /tasks/1
   def update
     if @task.update(task_params)
@@ -42,6 +48,7 @@ class TasksController < ApplicationController
   # DELETE /tasks/1
   def destroy
     @task.destroy
+    render json: @task
   end
 
   private
@@ -52,6 +59,10 @@ class TasksController < ApplicationController
 
     def set_column
       @column = Column.find(params[:column_id])
+    end
+
+    def cleanup
+      Task.cleanup @task
     end
 
     # Only allow a trusted parameter "white list" through.
