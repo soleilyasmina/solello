@@ -1,6 +1,7 @@
 class ColumnsController < ApplicationController
   before_action :set_column, only: [:show, :update, :destroy, :swap_columns]
   before_action :set_board, only: [:create, :swap_columns]
+  after_action :cleanup, only: [:destroy]
 
   # GET /columns
   def index
@@ -18,12 +19,12 @@ class ColumnsController < ApplicationController
   def create
     order = @board.columns.length
     @column = Column.new({
-      title: params[:title], 
+      title: column_params[:title], 
       board: @board,
       order: order 
     }) 
     if @column.save
-      render json: @column, status: :created, location: @column
+      render json: @column, status: :created
     else
       render json: @column.errors, status: :unprocessable_entity
     end
@@ -47,6 +48,7 @@ class ColumnsController < ApplicationController
   # DELETE /columns/1
   def destroy
     @column.destroy
+    render json: @column
   end
 
   private
@@ -56,11 +58,15 @@ class ColumnsController < ApplicationController
     end
 
     def set_board
-      @board = Board.find(@column.board_id)
+      @board = Board.find(params[:board_id])
+    end
+
+    def cleanup
+      Column.cleanup @column
     end
 
     # Only allow a trusted parameter "white list" through.
     def column_params
-      params.require(:column).permit(:title, :board_id)
+      params.permit(:title)
     end
 end

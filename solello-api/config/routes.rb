@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  resources :boards
-  resources :columns
+  resources :boards do
+    resources :columns
+  end
   put '/columns/:id/:new_order', to: 'columns#swap_columns'
 end

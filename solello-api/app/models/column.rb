@@ -35,4 +35,12 @@ class Column < ApplicationRecord
     true
   end
 
+  def self.cleanup column
+    board = Board.find(column.board_id)
+    columns = Column.where(order: column.order..board.columns.length, board_id: board.id)
+    columns.each do |col|
+      col.update({ order: col.order - 1 })
+    end
+  end
+
 end
