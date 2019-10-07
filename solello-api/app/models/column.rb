@@ -2,7 +2,8 @@ class Column < ApplicationRecord
   belongs_to :board
 
   def self.swap column, new_order, parent
-    if new_order.to_i > parent.columns.length
+    new_order = new_order.to_i
+    if new_order > parent.columns.length
       new_order = parent.columns.length - 1
     end
     # going left
@@ -33,6 +34,14 @@ class Column < ApplicationRecord
       false
     end
     true
+  end
+
+  def self.cleanup column
+    board = Board.find(column.board_id)
+    columns = Column.where(order: column.order..board.columns.length, board_id: board.id)
+    columns.each do |col|
+      col.update({ order: col.order - 1 })
+    end
   end
 
 end
