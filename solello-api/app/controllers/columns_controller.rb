@@ -1,5 +1,6 @@
 class ColumnsController < ApplicationController
   before_action :set_column, only: [:show, :update, :destroy, :swap_columns]
+  before_action :set_board, only: [:create, :swap_columns]
 
   # GET /columns
   def index
@@ -15,10 +16,10 @@ class ColumnsController < ApplicationController
 
   # POST /columns
   def create
-    order = Column.where("board_id = ?", params[:board_id]).length
+    order = @board.columns.length
     @column = Column.new({
       title: params[:title], 
-      board: Board.find(params[:board_id]),
+      board: @board,
       order: order 
     }) 
     if @column.save
@@ -30,7 +31,7 @@ class ColumnsController < ApplicationController
 
   # PUT /columns/:id/:new_order
   def swap_columns
-    puts Column.swap @column, params[:new_order], Board.find(@column.board_id)
+    Column.swap @column, params[:new_order], @board 
     render json: @column
   end
 
@@ -52,6 +53,10 @@ class ColumnsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_column
       @column = Column.find(params[:id])
+    end
+
+    def set_board
+      @board = Board.find(@column.board_id)
     end
 
     # Only allow a trusted parameter "white list" through.

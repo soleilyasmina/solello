@@ -2,6 +2,9 @@ class Column < ApplicationRecord
   belongs_to :board
 
   def self.swap column, new_order, parent
+    if new_order.to_i > parent.columns.length
+      new_order = parent.columns.length - 1
+    end
     # going left
     order = column[:order]
     if new_order < order
@@ -14,7 +17,7 @@ class Column < ApplicationRecord
         end
       end
       column.update({ order: new_order })
-    # going right
+      # going right
     elsif order < new_order
       columns = Column.where(order: order+1..new_order, board_id: parent.id)
       columns.each do |col|
@@ -25,10 +28,11 @@ class Column < ApplicationRecord
         end
       end
       column.update({ order: new_order })
-    # they're the same
+      # they're the same
     else
       false
     end
     true
   end
+
 end
