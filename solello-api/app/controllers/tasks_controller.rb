@@ -1,6 +1,7 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :update, :destroy, :swap_tasks]
-  before_action :set_column, only: [:create, :swap_tasks]
+  before_action :set_task, except: [:index, :create]
+  before_action :set_column, only: [:create, :swap_tasks, :swap_columns]
+  before_action :cleanup, only: [:swap_columns]
   after_action :cleanup, only: [:destroy]
 
   # GET /tasks
@@ -32,6 +33,13 @@ class TasksController < ApplicationController
   end
 
   def swap_tasks
+    Task.swap @task, params[:new_order], Column.find(@task.column_id)
+    render json: @task
+  end
+
+  def swap_columns
+    order = @column.tasks.length
+    @task.update(order: order, column_id: @column.id)
     Task.swap @task, params[:new_order], @column
     render json: @task
   end
