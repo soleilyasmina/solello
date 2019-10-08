@@ -4,7 +4,7 @@ class Task < ApplicationRecord
   def self.swap task, new_order, parent_column
     new_order = new_order.to_i
     if new_order > parent_column.tasks.length
-      new_order = parent_column.tasks.length - 1
+      new_order = parent_column.tasks.length
     end
     # going left
     order = task[:order]
