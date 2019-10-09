@@ -3,9 +3,9 @@ class BoardsController < ApplicationController
 
   # GET /boards
   def index
-    @boards = Board.all
+    @boards = Board.all_assoc
 
-    render json: @boards.to_json(include: {columns: { include: :tasks }})
+    render json: @boards
   end
 
   # GET /boards/1
